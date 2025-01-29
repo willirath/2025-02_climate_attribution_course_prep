@@ -1,0 +1,4 @@
+*.nc
+*.zip
+*.zarr
+.ipynb_checkpoints
