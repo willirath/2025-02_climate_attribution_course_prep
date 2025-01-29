@@ -9,7 +9,7 @@ $ papermill download_cordex.ipynb download_cordex.africa_mpi_clmcom.ipynb -p gcm
 ```
 As a result, we'll have a number of randomly named ZIP files in `data/orig/`
 
-## un-chunking netCDF files
+## Performance-optimised netCDF files
 
 The netCDF files available from CDS are compressed (deflated in their own terms) netCDF-4 files with chunks of size `{"time": 1, "lon": "full", "lat": "fulll"}`.
 Hence, _any_ read from the file will always have to read full spatial domains. 
@@ -18,3 +18,17 @@ For the Europe domain, this is a `400^2` overhead when users are only interested
 
 We'll transform all files to uncompressed files that don't use any chunking.
 As the netCDF compression does not do particularly well with real data, the resulting files will be only about 20% larger.
+
+In addition to chunks limiting througput, it's also advisable to stay away from netCDF4, because netCDF4 with HDF5 underneath does not allow for multi-threaded reads on the same file. This limitation is not present for netCDF3 files. So we go for netCDF3 files (with 64bit offset to allow for bigger than 2GB files).
+
+And finally, once the model simulation is finished, there is no use for record (or unlimited) time dimensions (as we don't _record_ any data any more). So we transform the time dimension to a regular fixed dimension. This further helps with fast opening of files and with random access.
+
+So in summary, we do:
+```shell
+$ cd data/orig/
+$ ls -1 *.zip | xargs -P4 -I {} unzip {}
+$ ls -1 *.nc | xargs -P4 -I {} nccopy -6 -u {} ../performance/{}
+$ cd -
+```
+
+If everything looks good, we can delete the `.zip` and `.nc` files from `data/orig/`.
