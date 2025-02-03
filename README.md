@@ -26,9 +26,11 @@ And finally, once the model simulation is finished, there is no use for record (
 So in summary, we do:
 ```shell
 $ cd data/orig/
-$ ls -1 *.zip | xargs -P4 -I {} unzip {}
-$ ls -1 *.nc | xargs -P4 -I {} nccopy -6 -u {} ../performance/{}
+$ ls -1tr *.zip | xargs -P4 -I {} unzip -o {}
+$ ls -1tr *.nc | xargs -P4 -I {} nccopy -6 -u {} ../performance/{}
 $ cd -
 ```
+The `ls -1tr` will work in chronological order on the `zip` and `nc` files.
+Hence, it accommodates the impatient who may want to have a look at the data while the download is still running.
 
 If everything looks good, we can delete the `.zip` and `.nc` files from `data/orig/`.
