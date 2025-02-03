@@ -17,7 +17,7 @@ For example, if a user requests one single time step for one single location, th
 For the Europe domain, this is a `400^2` overhead when users are only interested in time series of single locations.
 
 We'll transform all files to uncompressed files that don't use any chunking.
-As the netCDF compression does not do particularly well with real data, the resulting files will be only about 20% larger.
+For the CORDEX data, uncompressed netCDF files are approximately 90% larger than the compressed files.
 
 In addition to chunks limiting througput, it's also advisable to stay away from netCDF4, because netCDF4 with HDF5 underneath does not allow for multi-threaded reads on the same file. This limitation is not present for netCDF3 files. So we go for netCDF3 files (with 64bit offset to allow for bigger than 2GB files).
 
