@@ -1,6 +1,14 @@
 # Climate Attribution Block Course Preparation
 
-## Downloading all data
+## On the JupyterHub
+
+There's netCDF and Zarr data in: `shared_materials/climattr_data_please-dont-copy/` (Please don't copy to user dirs!)
+
+There's an example notebook for reading and working with the Zarr data in: `shared_materials/climattr_notebooks` (Feel free to copy to user dirs!)
+
+## Course preparation
+
+### Downloading all data
 
 There's a [notebooks/download_cordex.ipynb](notebooks/download_cordex.ipynb) which can either be adapted (not recommended) or run with Papermill as follows:
 ```shell
@@ -9,7 +17,7 @@ $ papermill download_cordex.ipynb download_cordex.africa_mpi_clmcom.ipynb -p gcm
 ```
 As a result, we'll have a number of randomly named ZIP files in `data/orig/`
 
-## Performance-optimised netCDF files
+### Performance-optimised netCDF files
 
 The netCDF files available from CDS are compressed (deflated in their own terms) netCDF-4 files with chunks of size `{"time": 1, "lon": "full", "lat": "fulll"}`.
 Hence, _any_ read from the file will always have to read full spatial domains. 
@@ -34,3 +42,11 @@ The `ls -1tr` will work in chronological order on the `zip` and `nc` files.
 Hence, it accommodates the impatient who may want to have a look at the data while the download is still running.
 
 If everything looks good, we can delete the `.zip` and `.nc` files from `data/orig/`.
+
+### Zarr stores
+
+For time series analysis, we choose chunking along the time axis with just enough footprint in the spatial domain that we don't loose performance for the chunking logistics. (Typically, chunks of about 100 MB are good. So for 100 years of daily data at single precision, we'll need a chunk size of `sqrt(100e6 / 100 / 365 / 4) ~ 30` in the horizontal dimensions.)
+
+Zarr stores are created with the [convert_to_zarr.ipynb](notebooks/convert_to_zarr.ipynb) notebook.
+
+
